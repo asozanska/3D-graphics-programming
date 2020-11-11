@@ -15,9 +15,9 @@ void SimpleShapeApplication::init() {
 
     std::vector<GLushort> indices = {
             0, 1, 2, 0, 2, 3, //base
-            4, 5, 6,
+            5, 4, 6,
             7, 8, 9,
-            10, 11, 12,
+            11, 10, 12,
             13, 14, 15
     };
 
@@ -52,6 +52,10 @@ void SimpleShapeApplication::init() {
         std::cerr << "Cannot create program from " << std::string(PROJECT_DIR) + "/shaders/base_vs.glsl" << " and ";
         std::cerr << std::string(PROJECT_DIR) + "/shaders/base_fs.glsl" << " shader files" << std::endl;
     }
+
+    glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CCW);
+    glCullFace(GL_BACK);
 
     GLuint idx_buffer_handle;
     glGenBuffers(1, &idx_buffer_handle);
