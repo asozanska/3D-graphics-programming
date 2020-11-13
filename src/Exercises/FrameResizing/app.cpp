@@ -99,6 +99,7 @@ void SimpleShapeApplication::init() {
                      glm::vec3(0.0f, 0.3f, 0.5f),
                      glm::vec3(0.0f, 0.5f, 0.0f));
 
+
     auto u_modifiers_index = glGetUniformBlockIndex(program, "Modifiers");
     if (u_modifiers_index == GL_INVALID_INDEX) {
         std::cout << "Cannot find Modifiers uniform block in program" << std::endl;
