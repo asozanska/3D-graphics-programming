@@ -91,7 +91,7 @@ void SimpleShapeApplication::init() {
     std::tie(w, h) = frame_buffer_size();
 
     aspect_ = (float)w/h;
-    fov_ = glm::radians(50.f);
+    fov_ = glm::pi<float>()/4.0;
     near_ = 0.1f;
     far_ = 100.0f;
     P_ = glm::perspective(fov_, aspect_, near_, far_);
@@ -99,13 +99,6 @@ void SimpleShapeApplication::init() {
                      glm::vec3(0.0f, 0.3f, 0.5f),
                      glm::vec3(0.0f, 0.5f, 0.0f));
 
-    auto PVM = P_ * V_;
-    glGenBuffers(1, &pvm_buffer_);
-    glBindBuffer(GL_UNIFORM_BUFFER, pvm_buffer_);
-    glBufferData(GL_UNIFORM_BUFFER, 4 * 4 * sizeof(float), nullptr, GL_STATIC_DRAW);
-    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), &PVM[0]);
-    glBindBuffer(GL_UNIFORM_BUFFER, 0);
-    glBindBufferBase(GL_UNIFORM_BUFFER, 0, pvm_buffer_);
 
     auto u_modifiers_index = glGetUniformBlockIndex(program, "Modifiers");
     if (u_modifiers_index == GL_INVALID_INDEX) {
@@ -130,6 +123,14 @@ void SimpleShapeApplication::init() {
 }
 
 void SimpleShapeApplication::frame() {
+    auto PVM = P_ * V_;
+    glGenBuffers(1, &pvm_buffer_);
+    glBindBuffer(GL_UNIFORM_BUFFER, pvm_buffer_);
+    glBufferData(GL_UNIFORM_BUFFER, 4 * 4 * sizeof(float), nullptr, GL_STATIC_DRAW);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), &PVM[0]);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    glBindBufferBase(GL_UNIFORM_BUFFER, 0, pvm_buffer_);
+
     glBindVertexArray(vao_);
     glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_SHORT, reinterpret_cast<GLvoid *>(0));
     glBindVertexArray(0);
