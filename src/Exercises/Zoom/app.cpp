@@ -53,6 +53,8 @@ void SimpleShapeApplication::init() {
         std::cerr << std::string(PROJECT_DIR) + "/shaders/base_fs.glsl" << " shader files" << std::endl;
     }
 
+    set_camera(new Camera);
+
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CCW);
     glCullFace(GL_BACK);
@@ -90,15 +92,10 @@ void SimpleShapeApplication::init() {
     int w, h;
     std::tie(w, h) = frame_buffer_size();
 
-    aspect_ = (float)w/h;
-    fov_ = glm::pi<float>()/4.0;
-    near_ = 0.1f;
-    far_ = 100.0f;
-    P_ = glm::perspective(fov_, aspect_, near_, far_);
-    V_ = glm::lookAt(glm::vec3(4.0f, -0.5f, -0.8f),
+    camera_->perspective(glm::pi<float>()/4.0, (float)w/h, 0.1f, 100.0f);
+    camera_->look_at(glm::vec3(4.0f, -0.5f, -0.8f),
                      glm::vec3(0.0f, 0.3f, 0.5f),
                      glm::vec3(0.0f, 0.5f, 0.0f));
-
 
     auto u_modifiers_index = glGetUniformBlockIndex(program, "Modifiers");
     if (u_modifiers_index == GL_INVALID_INDEX) {
@@ -123,7 +120,7 @@ void SimpleShapeApplication::init() {
 }
 
 void SimpleShapeApplication::frame() {
-    auto PVM = P_ * V_;
+    auto PVM = camera_->projection() * camera_->view();
     glGenBuffers(1, &pvm_buffer_);
     glBindBuffer(GL_UNIFORM_BUFFER, pvm_buffer_);
     glBufferData(GL_UNIFORM_BUFFER, 4 * 4 * sizeof(float), nullptr, GL_STATIC_DRAW);
@@ -139,6 +136,5 @@ void SimpleShapeApplication::frame() {
 void SimpleShapeApplication::framebuffer_resize_callback(int w, int h) {
     Application::framebuffer_resize_callback(w, h);
     glViewport(0,0,w,h);
-    aspect_ = (float) w / h;
-    P_ = glm::perspective(fov_, aspect_, near_, far_);
+    camera_->perspective(glm::pi<float>()/4.0, (float)w/h, 0.1f, 100.0f);
 }

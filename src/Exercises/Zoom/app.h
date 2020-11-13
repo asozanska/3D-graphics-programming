@@ -13,6 +13,7 @@
 #include "Application/utils.h"
 
 #include "glad/glad.h"
+#include "camera.h"
 
 class SimpleShapeApplication : public xe::Application {
 public:
@@ -25,15 +26,21 @@ public:
 
     void framebuffer_resize_callback(int w, int h) override;
 
+    void scroll_callback(double xoffset, double yoffset) override {
+        Application::scroll_callback(xoffset, yoffset);
+        camera()->zoom(yoffset / 30.0f);
+    }
+
+    void set_camera(Camera *camera) { camera_ = camera; }
+    Camera *camera() { return camera_; }
+    ~SimpleShapeApplication() {
+        if (camera_) {
+            delete camera_;
+        }
+    }
+
 private:
     GLuint vao_;
     GLuint pvm_buffer_;
-
-    float fov_;
-    float aspect_;
-    float near_;
-    float far_;
-
-    glm::mat4 P_;
-    glm::mat4 V_;
+    Camera *camera_;
 };
