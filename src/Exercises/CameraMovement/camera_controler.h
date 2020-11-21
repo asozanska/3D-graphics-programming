@@ -11,7 +11,7 @@ public:
     void set_camera(Camera *camera) { camera_ = camera; }
     void rotate_camera(float dx, float dy) {
         camera_->rotate_around_center(-scale_ * dy, camera_->x());
-        camera_->rotate_around_center(-scale_ * dx, glm::vec3{0.0f, 0.0f, 1.0f});
+        camera_->rotate_around_center(-scale_ * dx, camera_->y());
     }
     void mouse_moved(float x, float y) {
         if (LMB_pressed_) {
