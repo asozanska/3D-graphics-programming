@@ -42,6 +42,9 @@ void SimpleShapeApplication::init() {
                      glm::vec3(0.0f, 0.3f, 0.5f),
                      glm::vec3(0.0f, 0.5f, 0.0f));
 
+    start_ = std::chrono::steady_clock::now();
+    rotation_period = 4.0;
+
     glViewport(0, 0, w, h);
 
     glEnable(GL_DEPTH_TEST);
@@ -49,15 +52,12 @@ void SimpleShapeApplication::init() {
 }
 
 void SimpleShapeApplication::frame() {
-    auto PVM = camera_->projection() * camera_->view();
-    glGenBuffers(1, &pvm_buffer_);
-    glBindBuffer(GL_UNIFORM_BUFFER, pvm_buffer_);
-    glBufferData(GL_UNIFORM_BUFFER, 4 * 4 * sizeof(float), nullptr, GL_STATIC_DRAW);
-    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), &PVM[0]);
-    glBindBuffer(GL_UNIFORM_BUFFER, 0);
-    glBindBufferBase(GL_UNIFORM_BUFFER, 0, pvm_buffer_);
+    auto now = std::chrono::steady_clock::now();
+    auto elapsed_time = std::chrono::duration_cast<std::chrono::duration<float>>(now - start_).count();
+    auto rotation_angle = 2.0f * glm::pi<float>() * elapsed_time/rotation_period;
+    auto R = glm::rotate(glm::mat4(1.0f), rotation_angle,glm::vec3{0.0f, 1.0f, 0.0f});
+    pyramid_->draw(R, pvm_buffer_);
 
-    pyramid_->draw();
     glBindVertexArray(0);
 }
 

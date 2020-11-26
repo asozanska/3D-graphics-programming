@@ -8,6 +8,7 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include <memory>
+#include <chrono>
 
 
 #include "Application/application.h"
@@ -55,4 +56,6 @@ private:
     Camera *camera_;
     CameraControler *controler_;
     std::shared_ptr<Pyramid> pyramid_;
+    std::chrono::steady_clock::time_point start_;
+    float rotation_period;
 };
