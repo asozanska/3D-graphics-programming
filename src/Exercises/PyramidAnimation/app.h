@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <glm/glm.hpp>
+#include <memory>
 
 
 #include "Application/application.h"
@@ -15,11 +16,13 @@
 #include "glad/glad.h"
 #include "camera.h"
 #include "camera_controler.h"
+#include "pyramid.h"
 
 class SimpleShapeApplication : public xe::Application {
 public:
     SimpleShapeApplication(int width, int height, std::string title, int major = 4, int minor = 1) :
             Application(width, height, title, major, minor) {};
+
 
     void init() override;;
 
@@ -51,4 +54,5 @@ private:
     GLuint pvm_buffer_;
     Camera *camera_;
     CameraControler *controler_;
+    std::shared_ptr<Pyramid> pyramid_;
 };
