@@ -15,11 +15,14 @@
 #include "glad/glad.h"
 #include "camera.h"
 #include "camera_controler.h"
+#include "pyramid.h"
 
 class SimpleShapeApplication : public xe::Application {
 public:
     SimpleShapeApplication(int width, int height, std::string title, int major = 4, int minor = 1) :
             Application(width, height, title, major, minor) {};
+
+    Pyramid *pyramid;
 
     void init() override;;
 
