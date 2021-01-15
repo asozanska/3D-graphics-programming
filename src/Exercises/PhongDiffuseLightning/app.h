@@ -15,14 +15,14 @@
 #include "glad/glad.h"
 #include "camera.h"
 #include "camera_controler.h"
-#include "pyramid.h"
+#include "quad.h"
 
 class SimpleShapeApplication : public xe::Application {
 public:
     SimpleShapeApplication(int width, int height, std::string title, int major = 4, int minor = 1) :
             Application(width, height, title, major, minor) {};
 
-    Pyramid *pyramid;
+    Quad *quad;
 
     void init() override;;
 
@@ -52,6 +52,14 @@ public:
 private:
     GLuint vao_;
     GLuint pvm_buffer_;
+    GLuint light_buffer;
     Camera *camera_;
     CameraControler *controler_;
+    struct Light {
+        glm::vec4 position;
+        glm::vec4 color;
+        glm::vec4 a;
+        glm::vec3 ambient;
+    };
+    Light light;
 };
