@@ -13,6 +13,9 @@ layout(std140) uniform Light {
     vec3 ambient;
 } light;
 
+vec3 specular_color = vec3(1.0, 1.0, 1.0);
+float shininess = 500.0;
+float M_PI = 3.1415926;
 
 void main() {
     vec3 normal = normalize(vertex_normal_in_vs);
@@ -27,6 +30,11 @@ void main() {
     vec4 diffuse_color = texture(diffuse_map, vertex_texture_coordinates);
     vFragColor.a = diffuse_color.a;
     vFragColor.rgb = diffuse_color.rgb * light.ambient.rgb;
-    vFragColor.rgb += light_in * diffuse_color.rgb * light.color;
+    diffuse_color.rgb /= M_PI;
+
+    vec3 view_vector = normalize(-vertex_position_in_vs);
+    vec3 half_vector = normalize(view_vector + light_vector);
+    float specular = ((shininess + 8.0f) / M_PI * 8.0f) * (pow(max(dot(half_vector, normal), 0.0f), shininess));
+    vFragColor.rgb += light_in * light.color * specular;
 
 }
