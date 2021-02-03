@@ -5,6 +5,7 @@
 
 #include <vector>
 #include "glad/glad.h"
+#include "phong_material.h"
 
 
 class Quad  {
@@ -17,10 +18,13 @@ public:
     void operator=(Quad&& rhs) = delete;
     Quad(Quad&& rhs) = delete;
     void draw();
+    void setMaterial(glm::vec3 kd, uint32_t kd_map, glm::vec3 ks, uint32_t ks_map, float ns, uint32_t ns_map);
+    PhongMaterial* getMaterial();
 private:
     GLuint vao_;
     GLuint buffer_[2];
     GLuint diffuse_texture_;
+    PhongMaterial *material_;
 
     std::vector<GLushort> indices = {
             0, 1, 2,

@@ -53,6 +53,7 @@ private:
     GLuint vao_;
     GLuint pvm_buffer_;
     GLuint light_buffer;
+    GLuint material_buffer;
     Camera *camera_;
     CameraControler *controler_;
     struct Light {

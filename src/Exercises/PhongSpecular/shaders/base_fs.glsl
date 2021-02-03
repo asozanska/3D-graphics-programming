@@ -5,6 +5,8 @@ in vec2 vertex_texture_coordinates;
 in vec3 vertex_normal_in_vs;
 in vec3 vertex_position_in_vs;
 uniform sampler2D diffuse_map;
+uniform sampler2D specular_map;
+uniform sampler2D shininess_map;
 
 layout(std140) uniform Light {
     vec3 position_in_vs;
@@ -13,7 +15,17 @@ layout(std140) uniform Light {
     vec3 ambient;
 } light;
 
+layout(std140) uniform Material {
+    vec3 Kd;
+    uint Kd_map;
+    vec3 Ks;
+    uint Ks_map;
+    float Ns;
+    uint Ns_map;
+} material;
+
 vec3 specular_color = vec3(1.0, 1.0, 1.0);
+vec4 diffuse_color;
 float shininess = 500.0;
 float M_PI = 3.1415926;
 
@@ -36,5 +48,23 @@ void main() {
     vec3 half_vector = normalize(view_vector + light_vector);
     float specular = ((shininess + 8.0f) / M_PI * 8.0f) * (pow(max(dot(half_vector, normal), 0.0f), shininess));
     vFragColor.rgb += light_in * light.color * specular;
+
+    if (material.Kd_map>0) {
+        diffuse_color.a = texture(diffuse_map, vertex_texture_coordinates).a;
+        diffuse_color.rgb = texture(diffuse_map, vertex_texture_coordinates).rgb*material.Kd;
+    } else {
+        diffuse_color.a = 1;
+        diffuse_color.rgb = material.Kd;
+    }
+    if (material.Ks_map>0) {
+        specular_color = texture(specular_map, vertex_texture_coordinates).rgb*material.Ks;
+    } else {
+        specular_color = material.Ks;
+    }
+    if (material.Ns_map>0) {
+        shininess = texture(shininess_map, vertex_texture_coordinates).r*material.Ns;
+    } else {
+        shininess = material.Ns;
+    }
 
 }

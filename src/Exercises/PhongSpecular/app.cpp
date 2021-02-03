@@ -25,8 +25,10 @@ void SimpleShapeApplication::init() {
     glCullFace(GL_BACK);
 
     quad = new Quad;
+    quad->setMaterial(glm::vec3(1.0, 0.0, 0.0), 0, glm::vec3(0.05, 0.05, 0.05), 0 , 1000.0f, 0);
 
     xe::utils::set_uniform_block_binding(program, "Transformations", 0);
+    xe::utils::set_uniform_block_binding(program, "Material", 1);
     xe::utils::set_uniform_block_binding(program, "Light", 2);
 
     light.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -45,9 +47,15 @@ void SimpleShapeApplication::init() {
 
     glGenBuffers(1, &light_buffer);
     glBindBuffer(GL_UNIFORM_BUFFER, light_buffer);
-    glBufferData(GL_UNIFORM_BUFFER, 3 * 4 * sizeof(float) + 3 * sizeof(float), nullptr, GL_STATIC_DRAW);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(Light), nullptr, GL_STATIC_DRAW);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
     glBindBufferBase(GL_UNIFORM_BUFFER, 2, light_buffer);
+
+    glGenBuffers(1, &material_buffer);
+    glBindBuffer(GL_UNIFORM_BUFFER, material_buffer);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(PhongMaterial), nullptr, GL_STATIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    glBindBufferBase(GL_UNIFORM_BUFFER, 1, material_buffer);
 
     glGenBuffers(1, &pvm_buffer_);
     glBindBuffer(GL_UNIFORM_BUFFER, pvm_buffer_);
@@ -86,6 +94,9 @@ void SimpleShapeApplication::frame() {
     glBufferSubData(GL_UNIFORM_BUFFER, 3 * sizeof(glm::vec4), sizeof(glm::vec3), &light.ambient);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
+    glBindBuffer(GL_UNIFORM_BUFFER, material_buffer);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(PhongMaterial), quad->getMaterial());
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
     quad->draw();
     glBindVertexArray(0);
 }
