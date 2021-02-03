@@ -57,6 +57,7 @@ private:
     CameraControler *controler_;
     struct Light {
         glm::vec4 position;
+        glm::vec4 position_in_vs;
         glm::vec4 color;
         glm::vec4 a;
         glm::vec3 ambient;

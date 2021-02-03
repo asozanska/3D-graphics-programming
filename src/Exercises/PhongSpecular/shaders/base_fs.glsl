@@ -7,7 +7,7 @@ in vec3 vertex_position_in_vs;
 uniform sampler2D diffuse_map;
 
 layout(std140) uniform Light {
-    vec3 position;
+    vec3 position_in_vs;
     vec3 color;
     vec3 a;
     vec3 ambient;
@@ -22,7 +22,7 @@ void main() {
     if (!gl_FrontFacing) {
         normal = -normal;
     }
-    vec3 light_vector = light.position - vertex_position_in_vs;
+    vec3 light_vector = light.position_in_vs - vertex_position_in_vs;
     float r = length(light_vector);
     light_vector/=r;
     float attenuation = 1.0f / (light.a[0]+light.a[1]*r+light.a[2]*r*r);

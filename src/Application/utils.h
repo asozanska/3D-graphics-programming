@@ -18,6 +18,10 @@ namespace xe {
 
         std::string shader_type(GLenum type);
 
+        void set_uniform1i(GLuint program, const std::string& name, int value);
+
+        void set_uniform_block_binding(GLuint program, const std::string &name, GLuint binding);
+
     }
 
     GLuint create_shader_from_file(GLenum type, const std::string &path);

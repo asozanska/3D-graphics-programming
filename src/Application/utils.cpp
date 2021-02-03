@@ -51,6 +51,24 @@ namespace xe {
             }
             return "Unknown";
         }
+
+        void set_uniform1i(GLuint program, const std::string &name, int value) {
+            auto location = glGetUniformLocation(program, name.c_str());
+            if (location == -1) {
+                std::cerr << "Cannot find uniform `" << name << "'" << std::endl;
+            } else {
+                glUniform1i(location, value);
+            }
+        }
+
+        void set_uniform_block_binding(GLuint program, const std::string &name, GLuint binding) {
+            auto block_index = glGetUniformBlockIndex(program, name.c_str());
+            if (block_index == GL_INVALID_INDEX) {
+                std::cout << "Cannot find `" << name << "' in program " << program << std::endl;
+            } else {
+                glUniformBlockBinding(program, block_index, binding);
+            }
+        }
     }
 
 

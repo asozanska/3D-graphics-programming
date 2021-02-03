@@ -26,22 +26,8 @@ void SimpleShapeApplication::init() {
 
     quad = new Quad;
 
-    auto u_transformations_index = glGetUniformBlockIndex(program, "Transformations");
-    if (u_transformations_index == GL_INVALID_INDEX) {
-        std::cout << "Cannot find Transformations uniform block in program" << std::endl;
-    } else {
-        glUniformBlockBinding(program, u_transformations_index, 0);
-    }
-
-    auto u_light_index = glGetUniformBlockIndex(program, "Light");
-    if (u_light_index == GL_INVALID_INDEX)
-    {
-        std::cout << "Cannot find Light uniform block in program" << std::endl;
-    }
-    else
-    {
-        glUniformBlockBinding(program, u_light_index, 2);
-    }
+    xe::utils::set_uniform_block_binding(program, "Transformations", 0);
+    xe::utils::set_uniform_block_binding(program, "Light", 2);
 
     light.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
     light.a = glm::vec4(1.0f, 0.0f, 1.0f, 0.0f);
@@ -74,12 +60,7 @@ void SimpleShapeApplication::init() {
     glEnable(GL_DEPTH_TEST);
     glUseProgram(program);
 
-    auto  u_diffuse_map_location = glGetUniformLocation(program,"diffuse_map");
-    if(u_diffuse_map_location==-1) {
-        std::cerr<<"Cannot find uniform diffuse_map\n";
-    } else {
-        glUniform1ui(u_diffuse_map_location,0);
-    }
+    xe::utils::set_uniform1i(program, "diffuse_map", 0);
 }
 
 void SimpleShapeApplication::frame() {
@@ -87,7 +68,8 @@ void SimpleShapeApplication::frame() {
     auto VM = camera_->view();
     auto R = glm::mat3(VM);
     auto N = glm::transpose(glm::inverse(R));
-    light.position = VM * glm::vec4 (0.0f, 1.0f, 0.0f, 1.0f);
+    light.position = glm::vec4 (0.0f, 1.0f, 0.0f, 1.0f);
+    light.position_in_vs = VM * light.position;
 
     glBindBuffer(GL_UNIFORM_BUFFER, pvm_buffer_);
     glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), &P[0]);
@@ -98,7 +80,7 @@ void SimpleShapeApplication::frame() {
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
     glBindBuffer(GL_UNIFORM_BUFFER, light_buffer);
-    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::vec4), &light.position);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::vec4), &light.position_in_vs);
     glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::vec4), sizeof(glm::vec4), &light.color);
     glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::vec4), sizeof(glm::vec4), &light.a);
     glBufferSubData(GL_UNIFORM_BUFFER, 3 * sizeof(glm::vec4), sizeof(glm::vec3), &light.ambient);
