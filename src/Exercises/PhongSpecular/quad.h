@@ -23,7 +23,6 @@ public:
 private:
     GLuint vao_;
     GLuint buffer_[2];
-    GLuint diffuse_texture_;
     PhongMaterial *material_;
 
     std::vector<GLushort> indices = {

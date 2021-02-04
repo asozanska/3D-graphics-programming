@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <3rdParty/src/stb/stb_image.h>
 
 #include "glad/glad.h"
 
@@ -68,6 +69,67 @@ namespace xe {
             } else {
                 glUniformBlockBinding(program, block_index, binding);
             }
+        }
+
+        std::string error_msg(GLenum status) {
+            switch (status) {
+                case GL_INVALID_ENUM:
+                    return "INVALID ENUM";
+                case GL_INVALID_VALUE:
+                    return "INVALID VALUE";
+                case GL_INVALID_OPERATION:
+                    return "INVALID OPERATION";
+                case GL_STACK_OVERFLOW:
+                    return "STACK OVERFLOW";
+                case GL_STACK_UNDERFLOW:
+                    return "STACK UNDERFLOW";
+                case GL_OUT_OF_MEMORY:
+                    return "OUT OF MEMORY";
+                case GL_INVALID_FRAMEBUFFER_OPERATION:
+                    return "INVALID FRAMEBUFFER OPERATION";
+                default:
+                    return "UNKNOWN ERROR";
+            }
+        }
+
+        uint8_t *load_image(const std::string &filename, int *width, int *height, int *n_channels) {
+            stbi_set_flip_vertically_on_load(true);
+            auto data = stbi_load(filename.c_str(), width, height, n_channels, 0);
+            if (data == nullptr) {
+                std::cerr << "cannot load image from file `" << filename << "'\n";
+            } else {
+                std::cout << "read " << *width << "x" << *height << "x" << *n_channels << " image from file "
+                          << filename
+                          << "\n";
+            }
+            return data;
+        }
+
+        void load_texture(const std::string &filename) {
+            int width, height, n_channels;
+            auto data = xe::utils::load_image(filename, &width, &height, &n_channels);
+            if (data) {
+                if (n_channels == 3)
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+                else if (n_channels == 4)
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+                else if (n_channels == 2)
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG, width, height, 0, GL_RG, GL_UNSIGNED_BYTE, data);
+                else if (n_channels == 1)
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, data);
+                else {
+                    std::cerr << "Unsuported number of chanels ( " << n_channels << ")  in texture \n";
+                }
+                auto status = glGetError();
+                if (status != GL_NO_ERROR) {
+                    std::cerr << "Error " << status << " " << xe::utils::error_msg(status)
+                              << " while loading a texture "
+                              << std::endl;
+                }
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            }
+            stbi_image_free(data);
         }
     }
 

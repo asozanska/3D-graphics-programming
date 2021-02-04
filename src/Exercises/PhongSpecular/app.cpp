@@ -63,12 +63,28 @@ void SimpleShapeApplication::init() {
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
     glBindBufferBase(GL_UNIFORM_BUFFER, 0, pvm_buffer_);
 
+    GLuint diffuse_texture;
+    glGenTextures(1, &diffuse_texture);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, diffuse_texture);
+    xe::utils::load_texture(std::string(PROJECT_DIR) + "/plastic.png");
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    GLuint shininess_texture;
+    glGenTextures(1, &shininess_texture);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, shininess_texture);
+    xe::utils::load_texture(std::string(PROJECT_DIR) + "/shininess.png");
+    glBindTexture(GL_TEXTURE_2D, 0);
+
     glViewport(0, 0, w, h);
 
     glEnable(GL_DEPTH_TEST);
     glUseProgram(program);
 
     xe::utils::set_uniform1i(program, "diffuse_map", 0);
+    xe::utils::set_uniform1i(program,"specular_map",1);
+    xe::utils::set_uniform1i(program,"shininess_map",2);
 }
 
 void SimpleShapeApplication::frame() {
@@ -97,6 +113,21 @@ void SimpleShapeApplication::frame() {
     glBindBuffer(GL_UNIFORM_BUFFER, material_buffer);
     glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(PhongMaterial), quad->getMaterial());
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+    auto material = quad->getMaterial();
+    if(material->Kd_map>0) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, material->Kd_map);
+    }
+    if(material->Ks_map>0) {
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, material->Ks_map);
+    }
+    if(material->Ns_map>0) {
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, material->Ns_map);
+    }
+
     quad->draw();
     glBindVertexArray(0);
 }

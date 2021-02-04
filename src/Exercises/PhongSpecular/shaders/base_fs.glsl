@@ -46,8 +46,6 @@ void main() {
 
     vec3 view_vector = normalize(-vertex_position_in_vs);
     vec3 half_vector = normalize(view_vector + light_vector);
-    float specular = ((shininess + 8.0f) / M_PI * 8.0f) * (pow(max(dot(half_vector, normal), 0.0f), shininess));
-    vFragColor.rgb += light_in * light.color * specular;
 
     if (material.Kd_map>0) {
         diffuse_color.a = texture(diffuse_map, vertex_texture_coordinates).a;
@@ -66,5 +64,6 @@ void main() {
     } else {
         shininess = material.Ns;
     }
-
+    float specular = ((shininess + 8.0f) / M_PI * 8.0f) * (pow(max(dot(half_vector, normal), 0.0f), shininess));
+    vFragColor.rgb += light_in * light.color * specular;
 }
