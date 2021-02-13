@@ -38,7 +38,7 @@ void SimpleShapeApplication::init() {
     std::tie(w, h) = frame_buffer_size();
 
     camera_->perspective(glm::pi<float>()/4.0, (float)w/h, 0.1f, 100.0f);
-    camera_->look_at(glm::vec3(-5.0f, 5.5f, -20.0f),
+    camera_->look_at(glm::vec3(0.0f, 25.0f, 0.0f),
                      glm::vec3(0.0f, 0.3f, 0.5f),
                      glm::vec3(0.0f, 0.5f, 0.0f));
 
@@ -60,22 +60,22 @@ void SimpleShapeApplication::frame() {
     auto orbital_rotation_period = 20.0f;
     auto orbital_rotation_angle = 2.0f * glm::pi<float>() * elapsed_time / orbital_rotation_period;
     auto x = 10 * cos(orbital_rotation_angle);
-    auto y = 8 * sin(orbital_rotation_angle);
-    auto O = glm::translate(glm::mat4(1.0f), glm::vec3{x,y,0.0});
+    auto z = 8 * sin(orbital_rotation_angle);
+    auto O = glm::translate(glm::mat4(1.0f), glm::vec3{x,0.0,z});
     auto M = camera_->projection() * camera_->view() * O * R;
     pyramid_->draw(M, pvm_buffer_);
 
     auto moon = glm::scale(glm::mat4(1.0f), glm::vec3{0.5f, 0.5f, 0.5f});
     auto moon_rotation_angle = 2.0f * glm::pi<float>() * elapsed_time / 10.0f;
     auto R_moon =  glm::rotate(glm::mat4(1.0f), moon_rotation_angle, glm::vec3{0.0f, 1.0f, 0.0f});
-    auto moon_orbital_rotation_angle = 2.0f * glm::pi<float>() * elapsed_time / 10.0f;
+    auto moon_orbital_rotation_angle = -(2.0f * glm::pi<float>() * elapsed_time / 10.0f);
     auto O_moon= glm::translate(glm::mat4(1.0f), glm::vec3{(3.0f * cos(moon_orbital_rotation_angle)),0.0f, (3.0f * sin(moon_orbital_rotation_angle))});
     auto M_moon = camera_->projection() * camera_->view() * O * O_moon * R_moon * moon;
     pyramid_->draw(M_moon, pvm_buffer_);
 
     auto satellite = glm::scale(glm::mat4(1.0f), glm::vec3{0.25f, 0.25f, 0.25f});
     auto satellite_rotation_angle = 2.0f * glm::pi<float>() * elapsed_time / 2.0f;
-    auto R_satellite =  glm::rotate(glm::mat4(1.0f), satellite_rotation_angle, glm::vec3{0.0f, 1.0f, 0.0f});
+    auto R_satellite =  glm::rotate(glm::mat4(1.0f), satellite_rotation_angle, glm::vec3{0.0f, 0.0f, 1.0f});
     auto satellite_orbital_rotation_angle = 2.0f * glm::pi<float>() * elapsed_time / 2.0f;
     auto O_satellite= glm::translate(glm::mat4(1.0f), glm::vec3{(1.5f * cos(satellite_orbital_rotation_angle)),(1.5f * sin(satellite_orbital_rotation_angle)),0.0f});
     auto M_satellite = camera_->projection() * camera_->view() * O * O_satellite * R_satellite * satellite;
