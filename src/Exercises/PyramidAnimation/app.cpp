@@ -45,6 +45,10 @@ void SimpleShapeApplication::init() {
     start_ = std::chrono::steady_clock::now();
     rotation_period = 4.0;
 
+    glGenBuffers(1, &pvm_buffer_);
+    glBindBuffer(GL_UNIFORM_BUFFER, pvm_buffer_);
+    glBufferData(GL_UNIFORM_BUFFER, 4 * 4 * sizeof(float), nullptr, GL_STATIC_DRAW);
+
     glViewport(0, 0, w, h);
 
     glEnable(GL_DEPTH_TEST);
@@ -87,7 +91,7 @@ void SimpleShapeApplication::frame() {
 void SimpleShapeApplication::framebuffer_resize_callback(int w, int h) {
     Application::framebuffer_resize_callback(w, h);
     glViewport(0,0,w,h);
-    camera_->perspective(glm::pi<float>()/4.0, (float)w/h, 0.1f, 100.0f);
+    camera_->set_aspect((float)w/h);
 }
 
 void SimpleShapeApplication::mouse_button_callback(int button, int action, int mods) {
