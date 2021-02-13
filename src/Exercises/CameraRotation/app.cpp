@@ -138,7 +138,7 @@ void SimpleShapeApplication::frame() {
 void SimpleShapeApplication::framebuffer_resize_callback(int w, int h) {
     Application::framebuffer_resize_callback(w, h);
     glViewport(0,0,w,h);
-    camera_->perspective(glm::pi<float>()/4.0, (float)w/h, 0.1f, 100.0f);
+    camera_->set_aspect((float)w/h);
 }
 
 void SimpleShapeApplication::mouse_button_callback(int button, int action, int mods) {
