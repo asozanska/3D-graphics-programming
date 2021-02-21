@@ -24,9 +24,6 @@ void SimpleShapeApplication::init() {
     glFrontFace(GL_CCW);
     glCullFace(GL_BACK);
 
-    quad = new Quad;
-    quad->setMaterial(glm::vec3(1.0, 0.0, 0.0), 0, glm::vec3(0.05, 0.05, 0.05), 0 , 1000.0f, 0);
-
     xe::utils::set_uniform_block_binding(program, "Transformations", 0);
     xe::utils::set_uniform_block_binding(program, "Material", 1);
     xe::utils::set_uniform_block_binding(program, "Light", 2);
@@ -76,6 +73,9 @@ void SimpleShapeApplication::init() {
     glBindTexture(GL_TEXTURE_2D, shininess_texture);
     xe::utils::load_texture(std::string(PROJECT_DIR) + "/shininess.png");
     glBindTexture(GL_TEXTURE_2D, 0);
+
+    quad = new Quad();
+    quad->setMaterial(glm::vec3(1.0, 1.0, 1.0), diffuse_texture, glm::vec3(0.05, 0.85, 0.85), 0, 1000.0f, shininess_texture);
 
     glViewport(0, 0, w, h);
 

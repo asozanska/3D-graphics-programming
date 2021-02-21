@@ -65,5 +65,6 @@ void main() {
         shininess = material.Ns;
     }
     float specular = ((shininess + 8.0f) / M_PI * 8.0f) * (pow(max(dot(half_vector, normal), 0.0f), shininess));
-    vFragColor.rgb += light_in * light.color * specular;
+    vFragColor.rgb += light_in * diffuse_color.rgb;
+    vFragColor.rgb += light_in * light.color * specular * specular_color;
 }
